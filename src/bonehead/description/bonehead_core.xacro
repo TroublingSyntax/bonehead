@@ -1,0 +1,585 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- Include the inertial macro-->
+<xacro:include filename="inertial_macros.xacro"/>
+
+<material name="orange">
+    <color rgba="1 0.3 0.1 1"/>
+</material>
+
+<material name="red">
+    <color rgba="0.62 0.62 0.62 1"/>
+</material>
+
+<material name="black">
+    <color rgba="0 0 0 1"/>
+</material>
+
+<material name="white">
+    <color rgba="1 1 1 1"/>
+</material>
+
+<xacro:property name="c_length" value="0.3996"/>
+<xacro:property name="c_width" value="0.1651"/>
+<xacro:property name="c_depth" value="0.0762"/>
+
+<xacro:property name="h_length" value="0.055"/>
+<xacro:property name="h_width" value="0.01"/>
+<xacro:property name="h_depth" value="0.01"/>
+
+<xacro:property name="ul_length" value="0.139"/>
+<xacro:property name="ul_width" value="0.01"/>
+<xacro:property name="ul_depth" value="0.01"/>
+
+<xacro:property name="ll_length" value="0.148"/>
+<xacro:property name="ll_width" value="0.01"/>
+<xacro:property name="ll_depth" value="0.01"/>
+
+<xacro:property name="w_rad" value="0.075"/>
+<xacro:property name="w_length" value="0.01"/>
+
+<xacro:property name="c_mass" value="1.0"/>
+<xacro:property name="h_mass" value="0.1"/>
+<xacro:property name="ul_mass" value="0.5"/>
+<xacro:property name="ll_mass" value="0.25"/>
+<xacro:property name="w_mass" value="0.15"/>
+    
+<link name="base_link"/> 
+
+<joint name="chassis_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis"/>
+    <origin xyz="${c_length/2} 0 0.11"/>
+</joint>
+
+<!-- Chassis -->
+
+<link name="chassis">
+    <visual>
+        <origin xyz="0.0 0.0 ${c_depth/2}"/>
+        <geometry>
+            <box size="${c_length} ${c_width} ${c_depth}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="0.0 0.0 ${c_depth/2}"/>
+        <geometry>
+            <box size="${c_length} ${c_width} ${c_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${c_mass}" x="${c_length}" y="${c_width}" z="${c_depth}">
+        <origin xyz="0.0 0.0 ${c_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="chassis">
+    <material>Gazebo/Red</material>
+</gazebo>
+
+<!-- Front left leg-->
+
+<joint name="fl_hip_joint" type="revolute">
+    <origin xyz="${c_length/2 - h_width} ${c_width/2} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="chassis"/>
+    <child link="fl_hip_link"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fl_hip_link">
+    <visual>
+        <origin xyz="${h_width/2} ${h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${h_mass}" x="${h_width}" y="${h_length}" z="${h_depth}">
+        <origin xyz="${h_width/2} ${h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="fl_hip_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="fl_ul_joint" type="revolute">
+    <origin xyz="0.0 ${h_length} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="fl_hip_link"/>
+    <child link="fl_ul_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fl_ul_link">
+    <visual>
+        <origin xyz="${h_width/2} ${ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ul_mass}" x="${ul_width}" y="${ul_depth}" z="${ul_length}">
+        <origin xyz="${h_width/2} ${ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="fl_ul_link">
+    <material>Gazebo/Red</material>
+</gazebo>
+
+<joint name="fl_ll_joint" type="revolute">
+    <origin xyz="0.0 0.0 ${-ul_length}" rpy="0.0 0.0 0.0"/>
+    <parent link="fl_ul_link"/>
+    <child link="fl_ll_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fl_ll_link">
+    <visual>
+        <origin xyz="${ll_length/2} ${ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${ll_length/2} ${ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ll_mass}" x="${ll_length}" y="${ll_width}" z="${ll_depth}">
+        <origin xyz="${ll_length/2} ${ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="fl_ll_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="fl_wheel_joint" type="revolute">
+    <origin xyz="0.0 ${ll_width} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="fl_ll_link"/>
+    <child link="fl_wheel_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="0.0" upper="${2*pi}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fl_wheel_link">
+    <visual>
+        <origin xyz="0.0 ${w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="0.0 ${w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_cylinder mass="${w_mass}" length="${w_length}" radius="${w_rad}">
+        <origin xyz="0.0 ${w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+    </xacro:inertial_cylinder>
+</link>
+
+<gazebo reference="fl_wheel_link">
+    <material>Gazebo/White</material>
+</gazebo>
+
+<!-- Back left leg-->
+
+<joint name="bl_hip_joint" type="revolute">
+    <origin xyz="${-c_length/2} ${c_width/2} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="chassis"/>
+    <child link="bl_hip_link"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="bl_hip_link">
+    <visual>
+        <origin xyz="${h_width/2} ${h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${h_mass}" x="${h_width}" y="${h_length}" z="${h_depth}">
+        <origin xyz="${h_width/2} ${h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="bl_hip_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="bl_ul_joint" type="revolute">
+    <origin xyz="0.0 ${h_length} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="bl_hip_link"/>
+    <child link="bl_ul_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="bl_ul_link">
+    <visual>
+        <origin xyz="${h_width/2} ${ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ul_mass}" x="${ul_width}" y="${ul_depth}" z="${ul_length}">
+        <origin xyz="${h_width/2} ${ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="bl_ul_link">
+    <material>Gazebo/Red</material>
+</gazebo>
+
+<joint name="bl_ll_joint" type="revolute">
+    <origin xyz="0.0 0.0 ${-ul_length}" rpy="0.0 0.0 0.0"/>
+    <parent link="bl_ul_link"/>
+    <child link="bl_ll_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="bl_ll_link">
+    <visual>
+        <origin xyz="${ll_length/2} ${ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${ll_length/2} ${ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ll_mass}" x="${ll_length}" y="${ll_width}" z="${ll_depth}">
+        <origin xyz="${ll_length/2} ${ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="bl_ll_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="bl_wheel_joint" type="revolute">
+    <origin xyz="0.0 ${ll_width} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="bl_ll_link"/>
+    <child link="bl_wheel_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="0.0" upper="${2*pi}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="bl_wheel_link">
+    <visual>
+        <origin xyz="0.0 ${w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="0.0 ${w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_cylinder mass="${w_mass}" length="${w_length}" radius="${w_rad}">
+        <origin xyz="0.0 ${w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+    </xacro:inertial_cylinder>
+</link>
+
+<gazebo reference="bl_wheel_link">
+    <material>Gazebo/White</material>
+</gazebo>
+
+<!-- Front right leg-->
+
+<joint name="fr_hip_joint" type="revolute">
+    <origin xyz="${c_length/2 - h_width} ${-c_width/2} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="chassis"/>
+    <child link="fr_hip_link"/>
+    <axis xyz="-1.0 0.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fr_hip_link">
+    <visual>
+        <origin xyz="${h_width/2} ${-h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${-h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${h_mass}" x="${h_width}" y="${h_length}" z="${h_depth}">
+        <origin xyz="${h_width/2} ${-h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="fr_hip_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="fr_ul_joint" type="revolute">
+    <origin xyz="0.0 ${-h_length} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="fr_hip_link"/>
+    <child link="fr_ul_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fr_ul_link">
+    <visual>
+        <origin xyz="${h_width/2} ${-ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${-ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ul_mass}" x="${ul_width}" y="${ul_depth}" z="${ul_length}">
+        <origin xyz="${h_width/2} ${-ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="fr_ul_link">
+    <material>Gazebo/Red</material>
+</gazebo>
+
+<joint name="fr_ll_joint" type="revolute">
+    <origin xyz="0.0 0.0 ${-ul_length}" rpy="0.0 0.0 0.0"/>
+    <parent link="fr_ul_link"/>
+    <child link="fr_ll_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fr_ll_link">
+    <visual>
+        <origin xyz="${ll_length/2} ${-ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${ll_length/2} ${-ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ll_mass}" x="${ll_length}" y="${ll_width}" z="${ll_depth}">
+        <origin xyz="${ll_length/2} ${-ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="fr_ll_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="fr_wheel_joint" type="revolute">
+    <origin xyz="0.0 ${-ll_width} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="fr_ll_link"/>
+    <child link="fr_wheel_link"/>
+    <axis xyz="0.0 -1.0 0.0"/>
+    <limit lower="0.0" upper="${2*pi}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="fr_wheel_link">
+    <visual>
+        <origin xyz="0.0 ${-w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="0.0 ${-w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_cylinder mass="${w_mass}" length="${w_length}" radius="${w_rad}">
+        <origin xyz="0.0 ${-w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+    </xacro:inertial_cylinder>
+</link>
+
+<gazebo reference="fr_wheel_link">
+    <material>Gazebo/White</material>
+</gazebo>
+
+<!-- Back right leg-->
+
+<joint name="br_hip_joint" type="revolute">
+    <origin xyz="${-c_length/2} ${-c_width/2} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="chassis"/>
+    <child link="br_hip_link"/>
+    <axis xyz="-1.0 0.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="br_hip_link">
+    <visual>
+        <origin xyz="${h_width/2} ${-h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${-h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${h_width} ${h_length} ${h_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${h_mass}" x="${h_width}" y="${h_length}" z="${h_depth}">
+        <origin xyz="${h_width/2} ${-h_length/2} ${h_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="br_hip_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="br_ul_joint" type="revolute">
+    <origin xyz="0.0 ${-h_length} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="br_hip_link"/>
+    <child link="br_ul_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="br_ul_link">
+    <visual>
+        <origin xyz="${h_width/2} ${-ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${h_width/2} ${-ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ul_width} ${ul_depth} ${ul_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ul_mass}" x="${ul_width}" y="${ul_depth}" z="${ul_length}">
+        <origin xyz="${h_width/2} ${-ul_depth/2} ${-ul_length/2 + h_depth}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="br_ul_link">
+    <material>Gazebo/Red</material>
+</gazebo>
+
+<joint name="br_ll_joint" type="revolute">
+    <origin xyz="0.0 0.0 ${-ul_length}" rpy="0.0 0.0 0.0"/>
+    <parent link="br_ul_link"/>
+    <child link="br_ll_link"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="br_ll_link">
+    <visual>
+        <origin xyz="${ll_length/2} ${-ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+        <material name="red"/>
+    </visual>
+    <collision>
+        <origin xyz="${ll_length/2} ${-ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+        <geometry>
+            <box size="${ll_length} ${ll_width} ${ll_depth}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_box mass="${ll_mass}" x="${ll_length}" y="${ll_width}" z="${ll_depth}">
+        <origin xyz="${ll_length/2} ${-ll_width/2} ${ll_depth/2}" rpy="0.0 0.0 0.0"/>
+    </xacro:inertial_box>
+</link>
+
+<gazebo reference="br_ll_link">
+    <material>Gazebo/Black</material>
+</gazebo>
+
+<joint name="br_wheel_joint" type="revolute">
+    <origin xyz="0.0 ${-ll_width} 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="br_ll_link"/>
+    <child link="br_wheel_link"/>
+    <axis xyz="0.0 -1.0 0.0"/>
+    <limit lower="0.0" upper="${2*pi}" effort="100.0" velocity="3.0"/>
+</joint>
+
+<link name="br_wheel_link">
+    <visual>
+        <origin xyz="0.0 ${-w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="0.0 ${-w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+        <geometry>
+            <cylinder radius="${w_rad}" length="${w_length}"/>
+        </geometry>
+    </collision>
+    <xacro:inertial_cylinder mass="${w_mass}" length="${w_length}" radius="${w_rad}">
+        <origin xyz="0.0 ${-w_length/2} 0.0" rpy="${pi/2} 0.0 0.0"/>
+    </xacro:inertial_cylinder>
+</link>
+
+<gazebo reference="br_wheel_link">
+    <material>Gazebo/White</material>
+</gazebo>
+
+</robot>

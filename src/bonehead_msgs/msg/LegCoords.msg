@@ -1,0 +1,12 @@
+float32 frx
+float32 fry
+float32 frz
+float32 flx
+float32 fly
+float32 flz
+float32 brx
+float32 bry
+float32 brz
+float32 blx
+float32 bly
+float32 blz

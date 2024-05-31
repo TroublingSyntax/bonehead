@@ -1,0 +1,7 @@
+[Unit]
+Description=Daemon required to bringup Bonehead ROS code
+[Service]
+Environment="HOME=/home/dev"
+ExecStart=/home/dev/test-bonehead/src/bonehead/resources/bonehead_bringup.sh
+[Install]
+WantedBy=multi-user.target
